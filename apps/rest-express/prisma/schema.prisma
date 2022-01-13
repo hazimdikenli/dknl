@@ -7,7 +7,7 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model group_members {
+model GroupUser {
   group_id   Int
   user_id    Int
   created_by Int?
@@ -16,7 +16,7 @@ model group_members {
   @@id([group_id, user_id])
 }
 
-model group_roles {
+model GroupRole {
   group_id   Int
   role_id    Int
   created_by Int?
@@ -25,7 +25,7 @@ model group_roles {
   @@id([group_id, role_id])
 }
 
-model groups {
+model Group {
   group_id          Int      @id @default(autoincrement())
   group_name        String   @unique(map: "groups_group_name_unique")
   group_description String?
@@ -37,51 +37,64 @@ model groups {
 
 }
 
-model permissions {
-  permission_id          Int      @id @default(autoincrement())
-  permission_name        String   @unique(map: "permissions_permission_name_unique")
+model Permission {
+  permission_id          Int              @id @default(autoincrement())
+  permission_name        String           @unique(map: "permissions_permission_name_unique")
   permission_description String
   parent_id              Int?
+  Parent                 Permission?      @relation("ParentPermission", fields: [parent_id], references: [permission_id])
   created_by             Int?
-  created_at             DateTime @default(now())
+  created_at             DateTime         @default(now())
   updated_by             Int?
-  updated_at             DateTime @updatedAt
+  updated_at             DateTime         @updatedAt
+  RolePermission         RolePermission[]
+  SubPermissions         Permission[]     @relation("ParentPermission")
+  // @@map("permissions")
+  @@index([parent_id])
 }
 
-model role_permissions {
+model RolePermission {
+  role          Role       @relation(fields: [role_id], references: [role_id])
   role_id       Int
+  permission    Permission @relation(fields: [permission_id], references: [permission_id])
   permission_id Int
 
+  permissionPermission_id Int
   @@id([role_id, permission_id])
 }
 
-model roles {
-  role_id          Int      @id @default(autoincrement())
-  role_name        String   @unique(map: "roles_role_name_unique")
+model Role {
+  role_id          Int              @id @default(autoincrement())
+  role_name        String           @unique(map: "roles_role_name_unique")
   role_description String
   created_by       Int?
-  created_at       DateTime @default(now())
+  created_at       DateTime         @default(now())
   updated_by       Int?
-  updated_at       DateTime @updatedAt
+  updated_at       DateTime         @updatedAt
+  UserRole         UserRole[]
+  RolePermission   RolePermission[]
 }
 
-model user_roles {
+model UserRole {
+  user    User @relation(fields: [user_id], references: [user_id])
   user_id Int
+  role    Role @relation(fields: [role_id], references: [role_id])
   role_id Int
 
   @@id([user_id, role_id])
 }
 
-model users {
-  user_id    Int      @id @default(autoincrement())
-  user_name  String   @unique(map: "users_user_name_unique")
+model User {
+  user_id    Int        @id @default(autoincrement())
+  user_name  String     @unique(map: "users_user_name_unique")
   full_name  String
   password   String
   email      String
   created_by Int?
-  created_at DateTime @default(now())
+  created_at DateTime   @default(now())
   updated_by Int?
-  updated_at DateTime @updatedAt
+  updated_at DateTime   @updatedAt
+  UserRole   UserRole[]
 }
 
 // model statuses {
