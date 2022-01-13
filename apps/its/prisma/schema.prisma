@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model GroupUser {
+  group_id   Int
+  group      Group    @relation(fields: [group_id], references: [group_id])
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [user_id])
+  created_by Int?
+  created_at DateTime @default(now())
+
+  @@id([group_id, user_id])
+}
+
+model GroupRole {
+  group_id   Int
+  group      Group    @relation(fields: [group_id], references: [group_id])
+  role_id    Int
+  role       Role     @relation(fields: [role_id], references: [role_id])
+  created_by Int?
+  created_at DateTime @default(now())
+
+  @@id([group_id, role_id])
+}
+
+model Group {
+  group_id          Int      @id @default(autoincrement())
+  group_name        String   @unique(map: "groups_group_name_unique")
+  group_description String?
+  email             String?
+  created_by        Int?
+  created_at        DateTime @default(now())
+  updated_by        Int?
+  updated_at        DateTime @updatedAt
+
+  roles GroupRole[]
+  users GroupUser[]
+}
+
+model Permission {
+  permission_id          Int              @id @default(autoincrement())
+  permission_name        String           @unique(map: "permissions_permission_name_unique")
+  permission_description String
+  parent_id              Int?
+  parent                 Permission?      @relation("ParentPermission", fields: [parent_id], references: [permission_id])
+  created_by             Int?
+  created_at             DateTime         @default(now())
+  updated_by             Int?
+  updated_at             DateTime         @updatedAt
+  roles                  RolePermission[]
+  children               Permission[]     @relation("ParentPermission")
+  // @@map("permissions")
+
+  @@index([parent_id])
+}
+
+model RolePermission {
+  role          Role       @relation(fields: [role_id], references: [role_id])
+  role_id       Int
+  permission    Permission @relation(fields: [permission_id], references: [permission_id])
+  permission_id Int
+  created_by Int?
+  created_at DateTime @default(now())
+
+  @@id([role_id, permission_id])
+}
+
+model Role {
+  role_id          Int              @id @default(autoincrement())
+  role_name        String           @unique(map: "roles_role_name_unique")
+  role_description String
+  created_by       Int?
+  created_at       DateTime         @default(now())
+  updated_by       Int?
+  updated_at       DateTime         @updatedAt
+  users            UserRole[]
+  permissions      RolePermission[]
+  groups           GroupRole[]
+}
+
+model UserRole {
+  user    User @relation(fields: [user_id], references: [user_id])
+  user_id Int
+  role    Role @relation(fields: [role_id], references: [role_id])
+  role_id Int
+  created_by Int?
+  created_at DateTime @default(now())
+
+  @@id([user_id, role_id])
+}
+
+model User {
+  user_id    Int         @id @default(autoincrement())
+  user_name  String      @unique(map: "users_user_name_unique")
+  full_name  String
+  password   String
+  email      String
+  created_by Int?
+  created_at DateTime    @default(now())
+  updated_by Int?
+  updated_at DateTime    @updatedAt
+  roles      UserRole[]
+  groups     GroupUser[]
+}
+
+// model statuses {
+//   id                 Int    @id @default(autoincrement())
+//   status_name        String @unique(map: "statuses_status_name_unique")
+//   status_description String
+// }
+
+// model topic_groups {
+//   topic_id Int
+//   group_id Int
+
+//   @@id([topic_id, group_id])
+// }
+
+// model topic_users {
+//   topic_id Int
+//   user_id  Int
+
+//   @@id([topic_id, user_id])
+// }
+
+// model topics {
+//   id                          Int     @id @default(autoincrement())
+//   topic_name                  String  @unique(map: "topics_topic_name_unique")
+//   topic_description           String
+//   topic_description_formatted String
+//   topic_prefix                String
+//   email                       String?
+// }
