@@ -131,7 +131,7 @@ async function seedUsers(): Promise<User[]> {
     {
       user_name: 'admin',
       full_name: 'Admin User',
-      email: 'admin@dikenli.com',
+      user_email: 'admin@dikenli.com',
       password: '$2a$10$Agfl.CSaInZ6.5oMGhi7jec.hfAEahzz2OmiKF2hks3U/IEJhDqku',
       groups: {
         // connectOrCreate: {
@@ -153,7 +153,7 @@ async function seedUsers(): Promise<User[]> {
     {
       user_name: 'guest',
       full_name: 'Guest User',
-      email: 'guest@dikenli.com',
+      user_email: 'guest@dikenli.com',
       password: '$2a$10$fZ/NRlW6Wzm5JZg5ZaJiT.eKfIoeo5NUoZgGZX4iwcxMFfpRl37YK',
       groups: {
         create: [
