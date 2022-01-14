@@ -23,12 +23,12 @@ export class UserController {
   async signupUser(
     @Body() userData: UserModel,
   ): Promise<UserModel> {
-    return this.userService.createUser(userData);
+    return this.userService.create(userData);
   }
 
   @Get('')
   async getAll() : Promise<User[]> {
-    return await this.userService.users({});
+    return await this.userService.findMany({});
   }
   
 }
