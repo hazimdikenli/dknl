@@ -8,7 +8,7 @@ model GroupUserView {
 
   group_name        String
   group_description String
-  group_email       String
+  group_email       String?
   user_name         String
   full_name         String
   user_email        String
@@ -29,7 +29,7 @@ model GroupRoleView {
   role_description  String
   group_name        String
   group_description String
-  group_email       String
+  group_email       String?
 
   @@id([group_id, role_id])
 }

@@ -36,7 +36,7 @@ model Group {
   group_id          Int      @id @default(autoincrement())
   group_name        String   @unique(map: "groups_group_name_unique")
   group_description String?
-  group_email             String?
+  group_email       String?
   created_by        Int?
   created_at        DateTime @default(now())
   updated_by        Int?
@@ -68,8 +68,8 @@ model RolePermission {
   role_id       Int
   permission    Permission @relation(fields: [permission_id], references: [permission_id])
   permission_id Int
-  created_by Int?
-  created_at DateTime @default(now())
+  created_by    Int?
+  created_at    DateTime   @default(now())
 
   @@id([role_id, permission_id])
 }
@@ -88,10 +88,10 @@ model Role {
 }
 
 model UserRole {
-  user    User @relation(fields: [user_id], references: [user_id])
-  user_id Int
-  role    Role @relation(fields: [role_id], references: [role_id])
-  role_id Int
+  user       User     @relation(fields: [user_id], references: [user_id])
+  user_id    Int
+  role       Role     @relation(fields: [role_id], references: [role_id])
+  role_id    Int
   created_by Int?
   created_at DateTime @default(now())
 
@@ -103,7 +103,7 @@ model User {
   user_name  String      @unique(map: "users_user_name_unique")
   full_name  String
   password   String
-  user_email      String
+  user_email String
   created_by Int?
   created_at DateTime    @default(now())
   updated_by Int?

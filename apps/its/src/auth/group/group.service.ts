@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Group, Prisma } from '@prisma/client';
+import { Group, GroupView, Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/db/prisma.service';
 
@@ -8,18 +8,28 @@ export class GroupService {
   constructor(private prisma: PrismaService) {}
 
   async findUnique(
-    whereUniqueInput: Prisma.GroupWhereUniqueInput,
+    whereUniqueInput: Prisma.GroupViewWhereUniqueInput,
   ): Promise<Group> {
-    return this.prisma.group.findUnique({
+    return this.prisma.groupView.findUnique({
       where: whereUniqueInput,
       include: {
-        users: { include: { user: true } },
-        roles: { include: { role: true } },
+        users: {
+          select: { user_id: true, user_name: true, full_name: true, user_email: true },
+          // include: {
+          //   user: {
+          //     select: { user_id: true, user_name: true, full_name: true },
+          //   },
+          //},
+        },
+        roles: {
+          select: { role_id: true, role_name: true, role_description: true },
+          // include: { role: true }
+        },
       },
     });
   }
 
-  async findMany(params: {
+  async findManyForUpdate(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.GroupWhereUniqueInput;
@@ -33,11 +43,28 @@ export class GroupService {
       cursor,
       where,
       orderBy,
-      include: {
-        _count: {
-          select: { users: true, roles: true },
-        },
-      },
+      // include: {
+      //   _count: {
+      //     select: { users: true, roles: true },
+      //   },
+      // },
+    });
+  }
+
+  async findMany(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.GroupViewWhereUniqueInput;
+    where?: Prisma.GroupViewWhereInput;
+    orderBy?: Prisma.GroupViewOrderByWithRelationInput;
+  }): Promise<GroupView[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.groupView.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
     });
   }
 
