@@ -1,30 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Permission,
-  Prisma
-} from '@prisma/client';
+import { Permission, PermissionView, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/db/prisma.service';
 
 @Injectable()
 export class PermissionService {
   constructor(private prisma: PrismaService) {}
 
-  async findUnique(permissionWhereUniqueInput: Prisma.PermissionWhereUniqueInput): Promise<Permission | null> {
-    return this.prisma.permission.findUnique({
+  async findUnique(
+    permissionWhereUniqueInput: Prisma.PermissionViewWhereUniqueInput,
+  ): Promise<PermissionView | null> {
+    return this.prisma.permissionView.findUnique({
       where: permissionWhereUniqueInput,
-      include: {children:true, parent: true, roles: {include: {role: true}}}
+      include: {
+        children: true,
+        parent: true,
+        // roles: { include: { role: true } },
+        roles: {
+          select: { role_id: true, role_name: true, role_description: true },
+        },
+      },
     });
   }
 
   async findMany(params: {
     skip?: number;
     take?: number;
-    cursor?: Prisma.PermissionWhereUniqueInput;
-    where?: Prisma.PermissionWhereInput;
-    orderBy?: Prisma.PermissionOrderByWithRelationInput;
-  }): Promise<Permission[]> {
+    cursor?: Prisma.PermissionViewWhereUniqueInput;
+    where?: Prisma.PermissionViewWhereInput;
+    orderBy?: Prisma.PermissionViewOrderByWithRelationInput;
+  }): Promise<PermissionView[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.permission.findMany({
+    return this.prisma.permissionView.findMany({
       skip,
       take,
       cursor,

@@ -9,12 +9,17 @@ export class GroupService {
 
   async findUnique(
     whereUniqueInput: Prisma.GroupViewWhereUniqueInput,
-  ): Promise<Group> {
+  ): Promise<GroupView> {
     return this.prisma.groupView.findUnique({
       where: whereUniqueInput,
       include: {
         users: {
-          select: { user_id: true, user_name: true, full_name: true, user_email: true },
+          select: {
+            user_id: true,
+            user_name: true,
+            full_name: true,
+            user_email: true,
+          },
           // include: {
           //   user: {
           //     select: { user_id: true, user_name: true, full_name: true },
@@ -29,7 +34,7 @@ export class GroupService {
     });
   }
 
-  async findManyForUpdate(params: {
+  private async findManyForUpdate(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.GroupWhereUniqueInput;

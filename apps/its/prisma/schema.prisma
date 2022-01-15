@@ -206,8 +206,8 @@ model PermissionView {
   roles    RolePermissionView[]
   children PermissionView[]     @relation("ParentPermissionView")
 
-  parent_permission_name        String
-  parent_permission_description String
+  parent_permission_name        String?
+  parent_permission_description String?
 
   child_count Int
 
