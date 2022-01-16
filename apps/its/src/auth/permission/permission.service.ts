@@ -39,9 +39,12 @@ export class PermissionService {
     });
   }
 
-  async create(data: Prisma.PermissionCreateInput): Promise<Permission> {
+  async create(
+    data: Prisma.PermissionUncheckedCreateInput,
+  ): Promise<Permission> {
+    const { permission_name, permission_description, parent_id } = data;
     return this.prisma.permission.create({
-      data,
+      data: { permission_name, permission_description, parent_id },
     });
   }
 
