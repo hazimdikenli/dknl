@@ -9,16 +9,15 @@ type Props = {
 const defaultProps = {
   showSearch: true,
   allowClear: true,
-  placeholder:"Please select",
-  style:{ textAlign: 'left' },
-  dropdownStyle:{ maxHeight: 400, overflow: 'auto' }
-
+  placeholder: 'Please select',
+  style: { textAlign: 'left' },
+  dropdownStyle: { maxHeight: 400, overflow: 'auto' },
 } as Props;
 
-
-const TreeSelectPermission = ({data, ...rest
-}: Props) => {
-  const [treeData, setTreeData] = useState(convertPermissionListToTreeData(data));
+const TreeSelectPermission = ({ data, ...rest }: Props) => {
+  const [treeData, setTreeData] = useState(
+    convertPermissionListToTreeData(data),
+  );
   // const [value, setValue] = useState(undefined);
   const onChange = () => {
     console.log();
@@ -32,7 +31,7 @@ const TreeSelectPermission = ({data, ...rest
 
   return (
     <TreeSelect
-    treeData={treeData}
+      treeData={treeData}
       {...rest}
       treeDefaultExpandedKeys={treeDefaultExpandedKeys}
       onChange={(value: any, labelList: React.ReactNode[], extra: any) => {

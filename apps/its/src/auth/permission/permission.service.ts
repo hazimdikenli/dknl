@@ -50,7 +50,7 @@ export class PermissionService {
 
   async update(params: {
     where: Prisma.PermissionWhereUniqueInput;
-    data: Prisma.PermissionUpdateInput;
+    data: Prisma.PermissionUpdateInput | Prisma.PermissionUncheckedUpdateInput;
   }): Promise<Permission> {
     const { where, data } = params;
     return this.prisma.permission.update({

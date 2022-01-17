@@ -15,12 +15,12 @@ export const convertPermissionListToTreeData = (data: PermissionView[]) => {
       // key: row.permission_id.toString(),
       id: row.permission_id.toString(),
     } as INodeType;
-    const children = data.filter((f) => f.parent_id === row.permission_id);
-    node.children = children.map((c) => listToNode(c));
+    const children = data.filter(f => f.parent_id === row.permission_id);
+    node.children = children.map(c => listToNode(c));
     return node;
   };
 
-  const roots = data.filter((f) => !f.parent_id);
-  const treeData = roots.map((r) => listToNode(r));
+  const roots = data.filter(f => !f.parent_id);
+  const treeData = roots.map(r => listToNode(r));
   return treeData;
 };

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Permission as PermissionModel, PermissionView } from '@prisma/client';
 import { PermissionService } from './permission.service';
 
@@ -18,6 +18,23 @@ export class PermissionController {
     >,
   ): Promise<PermissionModel> {
     return this.service.create(data);
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: number,
+    @Body()
+    data: Omit<PermissionModel, 'permission_id'>,
+  ): Promise<PermissionModel> {
+    const { permission_name, permission_description, parent_id } = data;
+    return this.service.update({
+      where: { permission_id: Number(id) },
+      data: {
+        permission_name,
+        permission_description,
+        parent_id: parent_id ?? null,
+      },
+    });
   }
 
   @Get(':id/children')

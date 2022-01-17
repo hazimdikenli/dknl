@@ -24,7 +24,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint \"./**/*.ts*\" --quiet",
+    "lint:full": "eslint \"./**/*.ts*\"",
+    "lint:fix": "eslint --fix './**/*.ts*'",
+    "prettier:check": "prettier --check './**/*.ts*'",
+    "prettier:fix": "prettier --check --write './**/*.ts*'"
+
   },
   "eslintConfig": {
     "extends": [

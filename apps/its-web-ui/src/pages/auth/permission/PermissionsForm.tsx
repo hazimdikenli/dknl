@@ -48,10 +48,10 @@ export default function PermissionsForm({
   };
   const onFinish = (values: PermissionView) => {
     const parent = data.find(
-      (f) => f.permission_name === values.parent_permission_name
+      f => f.permission_name === values.parent_permission_name,
     );
     if (parent) values.parent_id = parent.permission_id;
-    else values.parent_id = undefined;
+    else values.parent_id = null;
     console.log(values);
     saveHandler(values);
   };

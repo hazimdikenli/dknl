@@ -49,17 +49,17 @@ export default function PermissionsTable({
         columns={columns}
         onRow={(record, rowIndex) => {
           return {
-            onClick: (event) => {
+            onClick: event => {
               console.log(event);
               rowClickHandler(record);
             }, // click row
-            onDoubleClick: (event) => {
+            onDoubleClick: event => {
               console.log(event);
               // rowClickHandler(record);
             }, // double click row
-            onContextMenu: (event) => {}, // right button click row
-            onMouseEnter: (event) => {}, // mouse enter row
-            onMouseLeave: (event) => {}, // mouse leave row
+            onContextMenu: event => {}, // right button click row
+            onMouseEnter: event => {}, // mouse enter row
+            onMouseLeave: event => {}, // mouse leave row
           };
         }}
         size="small"
