@@ -3,6 +3,11 @@ import { Group, GroupView, Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/db/prisma.service';
 
+export type GroupLookupModel = Pick<
+  Group,
+  'group_id' | 'group_name' | 'group_description' | 'group_email'
+>;
+
 @Injectable()
 export class GroupService {
   constructor(private prisma: PrismaService) {}
@@ -65,6 +70,29 @@ export class GroupService {
   }): Promise<GroupView[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.groupView.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
+  }
+
+  async findManyLookup(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.GroupViewWhereUniqueInput;
+    where?: Prisma.GroupViewWhereInput;
+    orderBy?: Prisma.GroupViewOrderByWithRelationInput;
+  }): Promise<GroupLookupModel[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.group.findMany({
+      select: {
+        group_id: true,
+        group_name: true,
+        group_email: true,
+        group_description: true,
+      },
       skip,
       take,
       cursor,

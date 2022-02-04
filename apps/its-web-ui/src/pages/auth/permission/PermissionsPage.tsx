@@ -3,13 +3,11 @@ import Grid from 'antd/lib/card/Grid';
 import axios from 'axios';
 import React, { ReactElement, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { QUERY_KEYS } from '../../../state';
 import { PermissionView } from '../../../types';
 import PermissionsForm from './PermissionsForm';
 import PermissionsTable from './PermissionsTable';
 
-enum QUERY_KEYS {
-  PERMISSIONS_ALL = 'permissions_all',
-}
 
 interface Props {}
 const getPermissions = async () => {
