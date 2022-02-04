@@ -3,18 +3,13 @@ import Grid from 'antd/lib/card/Grid';
 import axios from 'axios';
 import React, { ReactElement, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { QUERY_KEYS } from '../../../state';
+import { getPermissions, QUERY_KEYS } from '../../../state';
 import { PermissionView } from '../../../types';
 import PermissionsForm from './PermissionsForm';
 import PermissionsTable from './PermissionsTable';
 
 
 interface Props {}
-const getPermissions = async () => {
-  const result = await axios.get<PermissionView[]>('/auth/permissions/');
-  return result.data;
-};
-
 const newPermission = {
   permission_id: -1,
   permission_name: '',

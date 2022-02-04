@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GroupLookupModel, RoleListDto, User, UserLookupModel } from './types';
+import { GroupLookupModel, PermissionView, RoleListDto, User, UserLookupModel } from './types';
 
 export enum QUERY_KEYS {
   PERMISSIONS_ALL = 'permissions_all',
@@ -25,4 +25,11 @@ const getGroupsLookupData = async () => {
   const result = await axios.get<GroupLookupModel[]>('/auth/groups/lookup');
   return result.data;
 };
-export {getRoleList, getUserLookupData, getGroupsLookupData};
+
+const getPermissions = async () => {
+  const result = await axios.get<PermissionView[]>('/auth/permissions/');
+  return result.data;
+};
+
+
+export {getRoleList, getUserLookupData, getGroupsLookupData, getPermissions};

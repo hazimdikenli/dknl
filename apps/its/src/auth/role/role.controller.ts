@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { Role as RoleModel } from '@prisma/client';
+import { Role as RoleModel, RoleView } from '@prisma/client';
+import { GroupLookupModel } from '../group/group.service';
+import { UserLookupModel } from '../user/user.service';
 import { RoleService } from './role.service';
 
 @Controller('auth/roles')
@@ -11,10 +13,12 @@ export class RoleController {
     @Body()
     data: Omit<RoleModel, 'id' | 'created_at' | 'updated_at'> & {
       permissions: Array<{ permission_id: number; permission_name?: string }>;
+      users?: Array<UserLookupModel>;
+      groups?: Array<GroupLookupModel>;
     },
   ): Promise<RoleModel> {
-    const { permissions, ...role } = data;
-    return this.service.create({role, permissions});
+    const { permissions, users, groups, ...role } = data;
+    return this.service.create({ role, users, groups, permissions });
   }
 
   @Get(':id')
@@ -22,7 +26,7 @@ export class RoleController {
     return this.service.findUnique({ role_id: Number(id) });
   }
   @Get()
-  async getAll(): Promise<RoleModel[]> {
+  async getAll(): Promise<RoleView[]> {
     return this.service.findMany({});
   }
 }

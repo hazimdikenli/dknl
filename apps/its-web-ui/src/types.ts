@@ -49,9 +49,9 @@ export type RolePermissionView = {
 }
 
 export type RoleEditDto = RoleListDto & {
-  users:       {user_id: number;};
-  permissions: RolePermissionView[];
-  groups:      GroupRoleView[];
+  users:       UserLookupModel[];
+  permissions: {permission_id: number}[];
+  groups:      GroupLookupModel[];
 
 }
 
@@ -94,4 +94,23 @@ export type UserLookupModel = Pick<
 export type GroupLookupModel = Pick<
   Group,
   'group_id' | 'group_name' | 'group_description' | 'group_email'
+>;
+
+/**
+ * Model Permission
+ * 
+ */
+ export type Permission = {
+  permission_id: number
+  permission_name: string
+  permission_description: string
+  parent_id: number | null
+  created_by: number | null
+  created_at: Date
+  updated_by: number | null
+  updated_at: Date
+}
+export type PermissionLookupModel = Pick<
+Permission,
+  'permission_id' | 'permission_name' | 'parent_id' | 'permission_description'
 >;

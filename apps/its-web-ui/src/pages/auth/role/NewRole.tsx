@@ -1,16 +1,38 @@
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, message, notification } from 'antd';
 import Title from 'antd/lib/typography/Title';
+import axios from 'axios';
 import React, { useState } from 'react';
-import { useQuery } from 'react-query';
-import { getGroupsLookupData, getUserLookupData, QUERY_KEYS } from '../../../state';
-import { PermissionView, RoleEditDto, RoleListDto } from '../../../types';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import {
+  getGroupsLookupData,
+  getPermissions,
+  getUserLookupData,
+  QUERY_KEYS,
+} from '../../../state';
+import {
+  GroupLookupModel,
+  PermissionView,
+  RoleEditDto,
+  RoleListDto,
+  UserLookupModel,
+} from '../../../types';
+import TreeCheckPermission from '../../components/TreeCheckPermission';
 import TreeSelectPermission from '../../components/TreeSelectPermission';
 
 type Props = {};
 
 export default function NewRole({}: Props) {
   const [form] = Form.useForm();
-  const role = useState({ role_name: '', role_description: '' });
+  const [role, setRole] = useState({
+    role_name: '',
+    role_description: '',
+    users: [] as Array<UserLookupModel>,
+    groups: [] as Array<GroupLookupModel>,
+  });
+  const [userIdsInRole, setUserIdsInRole] = useState<string[]>([]);
+  const [groupIdsInRole, setGroupIdsInRole] = useState<string[]>([]);
+  const [checkedKeys, setCheckedKeys] = useState<React.Key[]>(['15']);
+
   const userLookupData = useQuery(
     QUERY_KEYS.USERS_LOOKUP_DATA,
     getUserLookupData,
@@ -19,10 +41,57 @@ export default function NewRole({}: Props) {
     QUERY_KEYS.GROUPS_LOOKUP_DATA,
     getGroupsLookupData,
   );
+  const permissionData = useQuery(QUERY_KEYS.PERMISSIONS_ALL, getPermissions);
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation(
+    (newRole: RoleEditDto) => {
+      if (newRole?.role_id > 0) {
+        console.log('trying to serialize');
+        const { role_id, ...perm } = newRole;
+        return axios.patch('/auth/roles/' + role_id.toString(), perm);
+      } else return axios.post('/auth/roles/', newRole);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(QUERY_KEYS.ROLES_ALL);
+      },
+    },
+  );
 
   const onFinish = (values: RoleEditDto) => {
+    console.log('Role:', role);
     console.log(values);
+    setRole(r => {
+      return Object.assign({}, r, values);
+    });
+    const newRole = { ...values };
+    const userIds = userIdsInRole.map(f => Number(f));
+    newRole.users =
+      userLookupData.data?.filter(u => userIds.includes(u.user_id)) ?? [];
+    const groupIds = groupIdsInRole.map(f => Number(f));
+    newRole.groups =
+      groupsLookupData.data?.filter(g => groupIds.includes(g.group_id)) ?? [];
+    newRole.permissions =
+      checkedKeys.map(p => {
+        return {
+          permission_id: Number(p),
+        };
+      }) ?? [];
     // saveHandler(values);
+    mutation
+      .mutateAsync(newRole)
+      .then(r => {
+        message.success('Changes are saved', 4.5);
+        console.log('new Role from db', r);
+      })
+      .catch(reason => {
+        notification['error']({
+          message: 'Error saving changes',
+          description: reason.message,
+          duration: 0,
+        });
+      });
   };
 
   const onReset = () => {
@@ -33,7 +102,12 @@ export default function NewRole({}: Props) {
     <Select.Option key={u.user_id.toString()}>{u.full_name}</Select.Option>
   ));
 
-  const handleChangeUsers = (value: any, option: any) => {
+  const handleChangeUsers = (value: string[], option: any) => {
+    setUserIdsInRole(value);
+    console.log('change', { value, option });
+  };
+  const handleChangeGroups = (value: string[], option: any) => {
+    setGroupIdsInRole(value);
     console.log('change', { value, option });
   };
 
@@ -70,8 +144,9 @@ export default function NewRole({}: Props) {
 
         <Form.Item>
           <Select
-            id='users'
+            id="users"
             mode="multiple"
+            value={userIdsInRole}
             allowClear
             style={{ width: '100%' }}
             placeholder="Users in Role"
@@ -82,16 +157,25 @@ export default function NewRole({}: Props) {
         </Form.Item>
         <Form.Item>
           <Select
-            id='groups'
+            id="groups"
             mode="multiple"
+            value={groupIdsInRole}
             allowClear
             style={{ width: '100%' }}
             placeholder="Groups in Role"
-            onChange={handleChangeUsers}
+            onChange={handleChangeGroups}
           >
-            {groupsLookupData.data?.map(g=> 
-            <Select.Option key={g.group_id}>{g.group_name}</Select.Option>)}
+            {groupsLookupData.data?.map(g => (
+              <Select.Option key={g.group_id}>{g.group_name}</Select.Option>
+            ))}
           </Select>
+        </Form.Item>
+        <Form.Item>
+          <TreeCheckPermission
+            data={permissionData?.data || []}
+            checkedKeys={checkedKeys}
+            setCheckedKeys={setCheckedKeys}
+          />
         </Form.Item>
 
         <Form.Item>

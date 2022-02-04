@@ -4,7 +4,7 @@ export interface INodeType {
   id: string;
   title: string;
   value: string;
-  // key: string; same as value
+  key: string; //same as value
   children?: INodeType[];
 }
 export const convertPermissionListToTreeData = (data: PermissionView[]) => {
@@ -12,7 +12,7 @@ export const convertPermissionListToTreeData = (data: PermissionView[]) => {
     const node = {
       title: row.permission_description,
       value: row.permission_name.toString(),
-      // key: row.permission_id.toString(),
+      key: row.permission_id.toString(),
       id: row.permission_id.toString(),
     } as INodeType;
     const children = data.filter(f => f.parent_id === row.permission_id);
