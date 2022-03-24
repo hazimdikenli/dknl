@@ -1,0 +1,24 @@
+{
+  "files":[],
+  "references": [
+    {"path": "apps/its/tsconfig.json"}
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": [
+    "**/.eslintrc.js",
+    "**/*.js",
+    "**/*.ts"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.d.ts",
+    "coverage",
+    "docs/_loopback.io",
+    "docs/_preview"
+  ]
+}

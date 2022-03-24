@@ -1,0 +1,28 @@
+.Container {
+  display: grid;
+  grid-template-areas:
+    'head head head '
+    'snav mnav main ';
+
+  grid-gap: 0;
+  background-color: #2196f3;
+  padding: 0;
+  grid-template-columns: var(--sidebar-width) var(--sidemenu-width) 1fr;
+  /*grid-template-rows: 4rem 1fr ;*/
+}
+.Header {
+  grid-area: head;
+  height: var(--top-bar-height);
+}
+.SNav {
+  grid-area: snav;
+  height: calc(100vh - var(--top-bar-height));
+  /* border-right: 2px dashed white; */
+}
+.MNav {
+  grid-area: mnav;
+  height: calc(100vh - var(--top-bar-height));
+}
+.Content {
+  grid-area: main;
+}

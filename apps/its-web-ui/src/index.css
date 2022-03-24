@@ -11,3 +11,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+:root {
+  --sidebar-width: 4.5rem;
+  --sidebar-top-bar-height: 2rem;
+  --sidemenu-width: 15rem;
+  /* --aside-menu-width: 14.5rem; */
+  --top-bar-height: 3rem;
+  /* channels menu */
+  --bottom-bar-height: 3.25rem;
+  /* main area bottom part */
+  --bottom-main-height: 4.25rem;
+
+  --background-primary: #36393f;
+  --background-secondary: #2f3136;
+  --background-tertiary: #202225;
+
+  --saturation-factor: 1;
+
+  --header-primary: #fff;
+  --header-secondary: #b9bbbe;
+  --text-normal: #dcddde;
+  --text-muted: #72767d;
+  --text-link: hsl(197, calc(var(--saturation-factor, 1) * 100%), 47.8%);
+  --text-link-low-saturation: hsl(
+    197,
+    calc(var(--saturation-factor, 1) * 100%),
+    52.9%
+  );
+  --text-positive: hsl(139, calc(var(--saturation-factor, 1) * 66.8%), 58.6%);
+  --text-warning: hsl(38, calc(var(--saturation-factor, 1) * 95.7%), 54.1%);
+  --text-danger: hsl(359, calc(var(--saturation-factor, 1) * 82.6%), 59.4%);
+  --text-brand: hsl(235, calc(var(--saturation-factor, 1) * 86.1%), 77.5%);
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
