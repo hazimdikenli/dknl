@@ -5,6 +5,10 @@ import { PrismaService } from 'src/db/prisma.service';
 import { GroupLookupModel } from '../group/group.service';
 import { UserLookupModel } from '../user/user.service';
 
+export type RoleLookupModel = Pick<
+  Role,
+  'role_id' | 'role_name' | 'role_description'
+>;
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
@@ -27,6 +31,28 @@ export class RoleService {
   }): Promise<RoleView[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.roleView.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
+  }
+
+  async findManyLookup(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.RoleWhereUniqueInput;
+    where?: Prisma.RoleWhereInput;
+    orderBy?: Prisma.RoleOrderByWithRelationInput;
+  }): Promise<RoleLookupModel[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.role.findMany({
+      select: {
+        role_id: true,
+        role_name: true,
+        role_description: true,
+      },
       skip,
       take,
       cursor,

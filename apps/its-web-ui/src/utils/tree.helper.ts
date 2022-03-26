@@ -1,3 +1,4 @@
+import React from 'react';
 import { PermissionView } from '../types';
 
 export interface INodeType {
@@ -21,6 +22,34 @@ export const convertPermissionListToTreeData = (data: PermissionView[]) => {
   };
 
   const roots = data.filter(f => !f.parent_id);
+  const treeData = roots.map(r => listToNode(r));
+  return treeData;
+};
+
+export interface INodeType {
+  id: string;
+  title: string;
+  value: string;
+  key: string; //same as value
+  children?: INodeType[];
+}
+
+type IGenericNodeType<T> = T & {
+  children?: IGenericNodeType<T>[];
+}
+export const convertListToTreeData = <TData>(
+  data: TData[], id: keyof TData, parent_id: keyof TData
+): IGenericNodeType<TData>[] => {
+  const listToNode = (row: TData) => {
+    const node = {
+      ...row,
+    } as IGenericNodeType<TData>;
+    const children = data.filter(f => f[parent_id] === row[id]);
+    node.children = children.map(c => listToNode(c));
+    return node;
+  };
+
+  const roots = data.filter(f => !f[parent_id]);
   const treeData = roots.map(r => listToNode(r));
   return treeData;
 };

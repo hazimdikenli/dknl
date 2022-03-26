@@ -1,10 +1,9 @@
-import { message, notification, Row, Col, Button, Modal } from 'antd';
-import axios from 'axios';
-import React, { ReactElement, useState } from 'react';
-import { useQueryClient, useQuery, useMutation } from 'react-query';
+import { Button, Col, Row } from 'antd';
+import React, { ReactElement } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { getRoleList, QUERY_KEYS } from '../../../state';
-import {  RoleListDto } from '../../../types';
+import { RoleListDto } from '../../../types';
 import RolesList from './RolesList';
 
 type Props = {};

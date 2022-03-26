@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { User, Prisma } from '@prisma/client';
+import { User, Prisma, UserView } from '@prisma/client';
 import { PrismaService } from 'src/db/prisma.service';
+import { GroupLookupModel } from '../group/group.service';
+import { RoleLookupModel } from '../role/role.service';
 
 export type UserLookupModel = Pick<
   User,
   'user_email' | 'user_id' | 'full_name' | 'user_name'
 >;
+export type UserCreateModel = Pick<
+  Prisma.UserCreateInput,
+  'user_name' | 'user_email' | 'full_name' | 'password'
+> & { groups: GroupLookupModel[]; roles: RoleLookupModel[] };
+
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
@@ -18,7 +25,7 @@ export class UserService {
     });
   }
 
-  async findMany(params: {
+  async findManyForUpdate(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.UserWhereUniqueInput;
@@ -27,6 +34,22 @@ export class UserService {
   }): Promise<User[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.user.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
+  }
+  async findMany(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.UserViewWhereUniqueInput;
+    where?: Prisma.UserViewWhereInput;
+    orderBy?: Prisma.UserViewOrderByWithRelationInput;
+  }): Promise<UserView[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.userView.findMany({
       skip,
       take,
       cursor,
@@ -59,7 +82,36 @@ export class UserService {
     });
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
+  async create(
+    user: UserCreateModel,
+  ): Promise<User> {
+    const {roles, groups, ...rest} = user;
+    const data: Prisma.UserCreateInput = rest;
+    //const data = { ...user } as Prisma.UserCreateInput;
+    if (roles && roles.length > 0) {
+      data.roles = {
+        create: roles.map((r) => {
+          return {
+            role: {
+              connect: { role_id: r.role_id },
+            },
+          };
+        }),
+      };
+    }
+
+    if (groups && groups.length > 0) {
+      data.groups = {
+        create: groups.map((r) => {
+          return {
+            group: {
+              connect: { group_id: r.group_id },
+            },
+          };
+        }),
+      };
+    }
+
     return this.prisma.user.create({
       data,
     });

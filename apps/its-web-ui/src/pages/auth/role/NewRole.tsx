@@ -1,4 +1,4 @@
-import { Form, Input, Button, Select, message, notification } from 'antd';
+import { Button, Form, Input, message, notification, Select } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -7,17 +7,12 @@ import {
   getGroupsLookupData,
   getPermissions,
   getUserLookupData,
-  QUERY_KEYS,
+  QUERY_KEYS
 } from '../../../state';
 import {
-  GroupLookupModel,
-  PermissionView,
-  RoleEditDto,
-  RoleListDto,
-  UserLookupModel,
+  GroupLookupModel, RoleEditDto, UserLookupModel
 } from '../../../types';
 import TreeCheckPermission from '../../components/TreeCheckPermission';
-import TreeSelectPermission from '../../components/TreeSelectPermission';
 
 type Props = {};
 
@@ -55,6 +50,7 @@ export default function NewRole({}: Props) {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(QUERY_KEYS.ROLES_ALL);
+        queryClient.invalidateQueries(QUERY_KEYS.ROLES_LOOKUP_DATA);
       },
     },
   );

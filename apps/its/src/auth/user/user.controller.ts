@@ -7,20 +7,20 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-import { UserLookupModel, UserService } from './user.service';
-import { Prisma, User } from '@prisma/client';
+import { UserCreateModel, UserLookupModel, UserService } from './user.service';
+import { Prisma, User, UserView } from '@prisma/client';
+import { GroupLookupModel } from '../group/group.service';
+import { RoleLookupModel } from '../role/role.service';
 
-type UserModel = Omit<
-  Prisma.UserCreateInput,
-  'created_by' | 'created_at' | 'updated_by' | 'updated_at' | 'UserRole'
->;
 
 @Controller('auth/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async signupUser(@Body() userData: UserModel): Promise<UserModel> {
+  async signupUser(@Body() userData: UserCreateModel): Promise<User> {
+    console.log('User Input:', userData);
+    // const { roles, groups, ...user } = userData;
     return this.userService.create(userData);
   }
 
@@ -30,7 +30,7 @@ export class UserController {
   }
 
   @Get('')
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<UserView[]> {
     return await this.userService.findMany({});
   }
 }
