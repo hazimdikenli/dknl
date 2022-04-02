@@ -115,6 +115,22 @@ export type UserEditDto = UserListDto & {
   groups: GroupLookupModel[];
 };
 /**
+ * Model GroupView
+ * 
+ */
+ export type GroupListDto = {
+  group_id: number
+  group_name: string
+  group_description: string | null
+  group_email: string | null
+  created_by: number | null
+  created_at: Date
+  updated_by: number | null
+  updated_at: Date
+  user_count: number
+  role_count: number
+}
+/**
  * Model Group
  *
  */
@@ -133,6 +149,11 @@ export type GroupLookupModel = Pick<
   Group,
   'group_id' | 'group_name' | 'group_description' | 'group_email'
 >;
+
+export type GroupEditDto = GroupListDto & {
+  roles: RoleLookupModel[];
+  users: UserLookupModel[];
+};
 
 /**
  * Model Permission

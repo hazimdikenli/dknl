@@ -6,37 +6,39 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import {
   getGroupsLookupData,
   getRoleLookupData,
+  getUserLookupData,
   QUERY_KEYS,
 } from '../../../state';
-import { GroupLookupModel, RoleLookupModel, 
-  UserEditDto } from '../../../types';
+import {
+  GroupEditDto,
+  RoleLookupModel,
+  UserLookupModel,
+} from '../../../types';
 
 type Props = {
   // permission: UserEditDto;
   // saveHandler: (row: UserEditDto) => any;
 };
 
-export default function UsersForm({}: // permission,
+export default function GroupsForm({}: // permission,
 // saveHandler,
 Props): ReactElement {
   const [form] = Form.useForm();
-  const [user, setUser] = useState({
-    user_name: '',
-    full_name: '',
-    user_email: '',
+  const [group, setGroup] = useState({
+    group_name: '',
+    group_description: '',
+    group_email: '',
     roles: [] as Array<RoleLookupModel>,
-    groups: [] as Array<GroupLookupModel>,
+    users: [] as Array<UserLookupModel>,
   });
 
-  const [groupIdsUserBelongTo, setGroupIdsUserBelongTo] = useState<string[]>(
-    [],
-  );
+  const [userIdsInGroup, setUserIdsInGroup] = useState<string[]>([]);
 
-  const [roleIdsUserHave, setRoleIdsUserHave] = useState<string[]>([]);
+  const [roleIdsGroupHave, setRoleIdsGroupHave] = useState<string[]>([]);
 
-  const groupsLookupData = useQuery(
-    QUERY_KEYS.GROUPS_LOOKUP_DATA,
-    getGroupsLookupData,
+  const usersLookupData = useQuery(
+    QUERY_KEYS.USERS_LOOKUP_DATA,
+    getUserLookupData,
   );
 
   const rolesLookupData = useQuery(
@@ -46,38 +48,38 @@ Props): ReactElement {
 
   const queryClient = useQueryClient();
   const mutation = useMutation(
-    (newUser: UserEditDto) => {
-      if (newUser?.user_id > 0) {
+    (newGroup: GroupEditDto) => {
+      if (newGroup?.group_id > 0) {
         console.log('trying to serialize');
-        const { user_id, ...user } = newUser;
-        return axios.patch('/auth/users/' + user_id.toString(), user);
-      } else return axios.post('/auth/users/', newUser);
+        const { group_id, ...group } = newGroup;
+        return axios.patch('/auth/groups/' + group_id.toString(), group);
+      } else return axios.post('/auth/groups/', newGroup);
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(QUERY_KEYS.USERS_ALL);
-        queryClient.invalidateQueries(QUERY_KEYS.USERS_LOOKUP_DATA);
+        queryClient.invalidateQueries(QUERY_KEYS.GROUPS_ALL);
+        queryClient.invalidateQueries(QUERY_KEYS.GROUPS_LOOKUP_DATA);
       },
     },
   );
 
-  const onFinish = (values: UserEditDto) => {
-    console.log('User: ', values);
-    const newUser = Object.assign({}, user, { password: '' }, values);
+  const onFinish = (values: GroupEditDto) => {
+    console.log('Group: ', values);
+    const newGroup = Object.assign({}, group, values);
     // get groups
-    const groupIds = groupIdsUserBelongTo.map(f => Number(f));
-    newUser.groups =
-      groupsLookupData.data?.filter(g => groupIds.includes(g.group_id)) ?? [];
+    const userIds = userIdsInGroup.map(f => Number(f));
+    newGroup.users =
+      usersLookupData.data?.filter(g => userIds.includes(g.user_id)) ?? [];
     // get roles
-    const roleIds = roleIdsUserHave.map(f => Number(f));
-    newUser.roles =
+    const roleIds = roleIdsGroupHave.map(f => Number(f));
+    newGroup.roles =
       rolesLookupData.data?.filter(g => roleIds.includes(g.role_id)) ?? [];
     // saveHandler(values);
     mutation
-      .mutateAsync(newUser)
+      .mutateAsync(newGroup)
       .then(r => {
         message.success('Changes are saved', 4.5);
-        console.log('new User from db', r);
+        console.log('new Group from db', r);
       })
       .catch(reason => {
         notification['error']({
@@ -92,57 +94,57 @@ Props): ReactElement {
     form.resetFields();
   };
 
-  const handleChangeGroups = (value: string[], option: any) => {
-    setGroupIdsUserBelongTo(value);
+  const handleChangeUsers = (value: string[], option: any) => {
+    setUserIdsInGroup(value);
     console.log('change', { value, option });
   };
 
   const handleChangeRoles = (value: string[], option: any) => {
-    setRoleIdsUserHave(value);
+    setRoleIdsGroupHave(value);
     console.log('change', { value, option });
   };
 
   return (
     <div style={{ padding: '1rem', maxWidth: '25rem' }}>
-      <Title level={2}>User Definition</Title>
+      <Title level={2}>Group Definition</Title>
       <Form
         layout="vertical"
         form={form}
-        name="user-edit-form"
+        name="group-edit-form"
         onFinish={onFinish}
-        initialValues={user}
+        initialValues={group}
         size="small"
       >
         <Form.Item
-          name="user_name"
-          label="User Name"
+          name="group_name"
+          label="Group Name"
           rules={[
-            { required: true, message: 'This user needs a unique name!' },
+            { required: true, message: 'This group needs a unique name!' },
           ]}
         >
-          <Input placeholder="User Name" />
+          <Input placeholder="Group Name" />
         </Form.Item>
 
         <Form.Item
-          name="full_name"
-          label="Full Name"
+          name="group_description"
+          label="Group Description"
           rules={[
             {
               required: true,
-              message: 'This user should have a name right!',
+              message: 'This group should have a description right!',
             },
           ]}
         >
-          <Input placeholder="Full Name" />
+          <Input placeholder="Group Description" />
         </Form.Item>
 
         <Form.Item
-          name="user_email"
+          name="group_email"
           label="e-mail"
           rules={[
             {
               required: true,
-              message: 'This user should have a working email!',
+              message: 'This group should have a working email!',
             },
             {
               type: 'email',
@@ -153,18 +155,18 @@ Props): ReactElement {
           <Input placeholder="e-mail" type={'email'} />
         </Form.Item>
 
-        <Form.Item name="groups" label="Groups">
+        <Form.Item name="users" label="Users">
           <Select
-            id="groups"
+            id="users"
             mode="multiple"
-            value={groupIdsUserBelongTo}
+            value={userIdsInGroup}
             allowClear
             style={{ width: '100%' }}
-            placeholder="Groups User Belong To"
-            onChange={handleChangeGroups}
+            placeholder="Users in Group"
+            onChange={handleChangeUsers}
           >
-            {groupsLookupData.data?.map(g => (
-              <Select.Option key={g.group_id}>{g.group_name}</Select.Option>
+            {usersLookupData.data?.map(g => (
+              <Select.Option key={g.user_id}>{g.user_name}</Select.Option>
             ))}
           </Select>
         </Form.Item>
@@ -173,10 +175,10 @@ Props): ReactElement {
           <Select
             id="roles"
             mode="multiple"
-            value={roleIdsUserHave}
+            value={roleIdsGroupHave}
             allowClear
             style={{ width: '100%' }}
-            placeholder="Roles User Have"
+            placeholder="Roles Group Have"
             onChange={handleChangeRoles}
           >
             {rolesLookupData.data?.map(g => (

@@ -2,11 +2,18 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Group, GroupView, Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/db/prisma.service';
+import { RoleLookupModel } from '../role/role.service';
+import { UserLookupModel } from '../user/user.service';
 
 export type GroupLookupModel = Pick<
   Group,
   'group_id' | 'group_name' | 'group_description' | 'group_email'
 >;
+
+export type GroupCreateModel = Pick<
+  Prisma.GroupCreateInput,
+  'group_name' | 'group_email' | 'group_description'
+> & { users: UserLookupModel[]; roles: RoleLookupModel[] };
 
 @Injectable()
 export class GroupService {
@@ -101,15 +108,8 @@ export class GroupService {
     });
   }
 
-  async create({
-    group,
-    roles,
-    users,
-  }: {
-    group: Prisma.GroupCreateInput;
-    roles?: Array<{ role_id: number; role_name?: string }>;
-    users?: Array<{ user_id: number; user_name?: string }>;
-  }): Promise<Group> {
+  async create(group: GroupCreateModel): Promise<Group> {
+    const {roles, users, ...rest} = group;
     const data = { ...group } as Prisma.GroupCreateInput;
 
     if (roles && roles.length > 0) {
@@ -117,7 +117,7 @@ export class GroupService {
         create: roles.map((p) => {
           return {
             role: {
-              connect: { role_id: p.role_id, role_name: p.role_name },
+              connect: { role_id: p.role_id},
             },
           };
         }),
@@ -129,7 +129,7 @@ export class GroupService {
         create: users.map((p) => {
           return {
             user: {
-              connect: { user_id: p.user_id, user_name: p.user_name },
+              connect: { user_id: p.user_id},
             },
           };
         }),

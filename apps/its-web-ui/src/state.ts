@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  GroupListDto,
   GroupLookupModel,
   PermissionView,
   RoleListDto,
@@ -37,6 +38,10 @@ const getUserLookupData = async () => {
   const result = await axios.get<UserLookupModel[]>('/auth/users/lookup');
   return result.data;
 };
+const getGroupsList = async () => {
+  const result = await axios.get<GroupListDto[]>('/auth/groups/');
+  return result.data;
+};
 
 const getGroupsLookupData = async () => {
   const result = await axios.get<GroupLookupModel[]>('/auth/groups/lookup');
@@ -50,9 +55,10 @@ const getPermissions = async () => {
 
 export {
   getRoleList,
+  getRoleLookupData,
   getUserLookupData,
+  getGroupsList,
   getGroupsLookupData,
   getPermissions,
   getUserList,
-  getRoleLookupData,
 };

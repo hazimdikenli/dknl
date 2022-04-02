@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Group as GroupModel } from '@prisma/client';
-import { GroupLookupModel, GroupService } from './group.service';
+import {
+  GroupCreateModel,
+  GroupLookupModel,
+  GroupService,
+} from './group.service';
 
 @Controller('auth/groups')
 export class GroupController {
@@ -9,13 +13,9 @@ export class GroupController {
   @Post()
   async create(
     @Body()
-    data: Omit<GroupModel, 'id' | 'created_at' | 'updated_at'> & {
-      roles: Array<{ role_id: number; role_name?: string }>;
-      users: Array<{ user_id: number; user_name?: string }>;
-    },
+    groupData: GroupCreateModel,
   ): Promise<GroupModel> {
-    const { roles, users, ...group } = data;
-    return this.service.create({ group, roles, users });
+    return this.service.create(groupData);
   }
 
   @Get('/lookup')

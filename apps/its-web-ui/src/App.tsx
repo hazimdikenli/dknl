@@ -10,6 +10,8 @@ import MainLayout from './components/layout/mainlayout/MainLayout';
 import Home from './pages/home/Home';
 import UsersPage from './pages/auth/user/UsersPage';
 import UsersForm from './pages/auth/user/UsersForm';
+import GroupsPage from './pages/auth/groups/GroupsPage';
+import GroupsForm from './pages/auth/groups/GroupsForm';
 
 const queryClient = new QueryClient();
 function App() {
@@ -17,18 +19,40 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <div className="App">
         <Routes>
-          <Route path="/" element={<MainLayout content={<Home/>}></MainLayout>} />
-          <Route path="/auth/permissions" element={
-          <MainLayout content={<PermissionsPage />} />
-          } />
-          <Route path="/auth/roles" element={
-          <MainLayout content={<RolesPage />}/>} />
-          <Route path="/auth/roles/new" element={
-          <MainLayout content={<NewRole />}/>} />
-          <Route path="/auth/users" element={
-          <MainLayout content={<UsersPage />}/>} />
-          <Route path="/auth/users/new" element={
-          <MainLayout content={<UsersForm />}/>} />
+          <Route
+            path="/"
+            element={<MainLayout content={<Home />}></MainLayout>}
+          />
+          <Route
+            path="/auth/permissions"
+            element={<MainLayout content={<PermissionsPage />} />}
+          />
+          <Route
+            path="/auth/roles"
+            element={<MainLayout content={<RolesPage />} />}
+          />
+          <Route
+            path="/auth/roles/new"
+            element={<MainLayout content={<NewRole />} />}
+          />
+
+          <Route
+            path="/auth/groups"
+            element={<MainLayout content={<GroupsPage />} />}
+          />
+          <Route
+            path="/auth/groups/new"
+            element={<MainLayout content={<GroupsForm />} />}
+          />
+
+          <Route
+            path="/auth/users"
+            element={<MainLayout content={<UsersPage />} />}
+          />
+          <Route
+            path="/auth/users/new"
+            element={<MainLayout content={<UsersForm />} />}
+          />
         </Routes>
       </div>
       <ReactQueryDevtools initialIsOpen={false} />
